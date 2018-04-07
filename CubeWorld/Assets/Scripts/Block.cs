@@ -8,9 +8,9 @@ public class Block {
 	public enum BlockType{GRASS, DIRT, STONE, AIR};
 	public bool isSolid;
 	public BlockType bType;
+	Chunk owner;
 	GameObject parent;
 	Vector3 position;
-	Material material;
 
 	//Block Type and its corrosponding index on the texture Atlas
 	public Dictionary<BlockType, Vector2> BlockDictionary = new Dictionary<BlockType, Vector2>(){
@@ -33,11 +33,11 @@ public class Block {
 						new Vector2(0.0f, 0.9375f), new Vector2(0.0625f, 0.9375f)}
 	};
 
-	public Block(BlockType b, Vector3 pos, GameObject p, Material c){
+	public Block(BlockType b, Vector3 pos, GameObject p, Chunk o){
 		bType = b;
 		parent = p;
 		position = pos;
-		material = c;
+		owner = o;
 
 		if(bType == BlockType.AIR){
 			isSolid = false;
@@ -165,7 +165,7 @@ public class Block {
 
 	public bool HasSolidNeighbour(int x, int y, int z){
 		
-		Block[,,] chunks = parent.GetComponent<Chunk>().chunkData;
+		Block[,,] chunks = owner.chunkData;
 		try{
 			return chunks[x,y,z].isSolid;
 		}
