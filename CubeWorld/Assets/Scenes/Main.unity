@@ -311,6 +311,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textureAtlas: {fileID: 2100000, guid: 32e9c2d170bb45e49b1fae3f948894b9, type: 2}
+  WorldSize: 4
+  IsRandom: 0
 --- !u!4 &1598971608
 Transform:
   m_ObjectHideFlags: 0

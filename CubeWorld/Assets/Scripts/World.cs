@@ -2,44 +2,79 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class World : MonoBehaviour {
+public class World : MonoBehaviour
+{
 
-	public Material textureAtlas;
-	public static int ColumnHeight = 16;
-	public static int chunkSize = 6;
-	// Use this for initialization
-	public static Dictionary<string, Chunk> chunks;
+    public Material textureAtlas;
+    public static int ColumnHeight = 16;
+    public static int chunkSize = 16;
+    public static int worldSize = 2;
+    public int WorldSize;
+    public static bool isRandom;
+    public bool IsRandom;
+    // Use this for initialization
+    public static Dictionary<string, Chunk> chunks;
 
-	public static string BuildChunkName(Vector3 v){
-		return (int)v.x + "_" +
-				(int)v.y + "_" +
-				(int)v.z;
-	}
+    public static string BuildChunkName(Vector3 v)
+    {
+        return (int)v.x + "_" +
+                (int)v.y + "_" +
+                (int)v.z;
+    }
 
-	IEnumerator BuildChunkColumn(){
-		for(int i = 0; i < ColumnHeight; i++){
+    IEnumerator BuildChunkColumn()
+    {
+        for (int i = 0; i < ColumnHeight; i++)
+        {
 
-			Vector3 chunkPosition = new Vector3(this.transform.position.x, i*chunkSize, this.transform.position.z);
-			Chunk c = new Chunk(chunkPosition, textureAtlas);
-			c.chunk.transform.parent = this.transform;
-			chunks.Add(c.chunk.name, c);
-		}
+            Vector3 chunkPosition = new Vector3(this.transform.position.x, i * chunkSize, this.transform.position.z);
+            Chunk c = new Chunk(chunkPosition, textureAtlas);
+            c.chunk.transform.parent = this.transform;
+            chunks.Add(c.chunk.name, c);
+        }
 
-		foreach(KeyValuePair<string, Chunk> c in chunks){
-			c.Value.DrawChunk();
-			yield return null;
-		}
-	}
+        foreach (KeyValuePair<string, Chunk> c in chunks)
+        {
+            c.Value.DrawChunk();
+            yield return null;
+        }
+    }
 
-	void Start () {
-		chunks = new Dictionary<string, Chunk>();
-		this.transform.position = Vector3.zero;
-		this.transform.rotation = Quaternion.identity;
-		StartCoroutine(BuildChunkColumn());
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    IEnumerator BuildWorld()
+    {
+        for (int z = 0; z < worldSize; z++)
+            for (int x = 0; x < worldSize; x++)
+                for (int y = 0; y < ColumnHeight; y++)
+                {
+                    Vector3 chunkPosition = new Vector3(x * chunkSize, y * chunkSize, z * chunkSize);
+                    Chunk c = new Chunk(chunkPosition, textureAtlas);
+                    c.chunk.transform.parent = this.transform;
+                    chunks.Add(c.chunk.name, c);
+                }
+
+        foreach (KeyValuePair<string, Chunk> c in chunks)
+        {
+            c.Value.DrawChunk();
+            yield return null;
+        }
+    }
+
+    void Start()
+    {
+        chunks = new Dictionary<string, Chunk>();
+        this.transform.position = Vector3.zero;
+        this.transform.rotation = Quaternion.identity;
+        StartCoroutine(BuildWorld());
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    void OnValidate(){
+        worldSize = WorldSize;
+        isRandom = IsRandom;
+    }
 }

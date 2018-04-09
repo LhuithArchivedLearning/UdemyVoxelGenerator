@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chunk{
+public class Chunk
+{
     public Material material;
     public Block[,,] chunkData;
     public GameObject chunk;
@@ -18,19 +19,30 @@ public class Chunk{
                 {
                     Vector3 pos = new Vector3(x, y, z);
 
-                    if (Random.RandomRange(0, 100) < 50)
+                    int worldX = (int)(x + chunk.transform.position.x);
+                    int worldY = (int)(y + chunk.transform.position.y);
+                    int worldZ = (int)(z + chunk.transform.position.z);
+
+                    if (Utils.Utils.FBM3D(worldX, worldY, worldZ, 0.1f, 3) < 0.415f)
+                        chunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, chunk.gameObject, this);
+                    else if (worldY <= Utils.Utils.GenerateStoneHeight(worldX, worldZ))
                     {
-                        chunkData[x, y, z] = new Block(Block.BlockType.DIRT, pos,
-                                                chunk.gameObject, this);
+                        if (Utils.Utils.FBM3D(worldX, worldY, worldZ, 0.01f, 2) < 0.4f && worldY < 40)
+                            chunkData[x, y, z] = new Block(Block.BlockType.DIAMOND, pos, chunk.gameObject, this);
+                        else
+                            chunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, chunk.gameObject, this);
                     }
+
+                    else if (worldY == Utils.Utils.GenerateHeight(worldX, worldZ))
+                        chunkData[x, y, z] = new Block(Block.BlockType.GRASS, pos, chunk.gameObject, this);
+                    else if (worldY <= Utils.Utils.GenerateHeight(worldX, worldZ))
+                        chunkData[x, y, z] = new Block(Block.BlockType.DIRT, pos, chunk.gameObject, this);
                     else
-                    {
-                        chunkData[x, y, z] = new Block(Block.BlockType.AIR, pos,
-                                                chunk.gameObject, this);
-                    }
+                        chunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, chunk.gameObject, this);
+
                 }
     }
-    
+
     public void DrawChunk()
     {
         //Draw Blocks
@@ -76,7 +88,8 @@ public class Chunk{
         }
     }
 
-    public Chunk(Vector3 position, Material c){
+    public Chunk(Vector3 position, Material c)
+    {
         chunk = new GameObject(World.BuildChunkName(position));
         chunk.transform.position = position;
         material = c;
