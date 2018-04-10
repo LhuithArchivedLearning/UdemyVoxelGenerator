@@ -46,9 +46,9 @@ namespace Utils
         float frequancy = 1;
         float amplitude = 1;
         float maxValue = 0;
-
+		float offset = 32000f;
         for(int i = 0; i < octaves; i++){
-            total += Mathf.PerlinNoise(x * frequancy, z * frequancy) * amplitude;
+            total += Mathf.PerlinNoise((x+offset) * frequancy, (z+offset) * frequancy) * amplitude;
             maxValue += amplitude;
             amplitude *= persistance;
             frequancy *= 2;
