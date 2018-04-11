@@ -21,16 +21,20 @@ public class Block
     };
 
     Vector2[,] blockUVs = {
-		/* GRASS TOP */ {new Vector2(0.125f, 0.375f), new Vector2(0.1875f, 0.375f),
-                         new Vector2(0.125f, 0.4375f), new Vector2(0.1875f, 0.4375f)},
-		/* GRASS SIDE*/ {new Vector2(0.1875f, 0.9375f), new Vector2(0.25f, 0.9375f),
-                         new Vector2(0.1875f, 1.0f), new Vector2(0.25f, 1.0f)},
-		/* DIRT*/		{new Vector2(0.125f, 0.9375f), new Vector2(0.1875f, 0.9375f),
-                         new Vector2(0.125f, 1.0f), new Vector2(0.1875f, 1.0f)},
-		/* STONE*/		{new Vector2(0.0f, 0.875f), new Vector2(0.0625f, 0.875f),
-                        new Vector2(0.0f, 0.9375f), new Vector2(0.0625f, 0.9375f)},
-		/* DIAMOND*/	{new Vector2(0.125f, 0.75f), new Vector2(0.1875f, 0.75f),
-						new Vector2(0.125f, 0.8125f), new Vector2(0.1875f, 0.8125f)}
+		/*GRASS TOP*/		{new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
+								new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
+		/*GRASS SIDE*/		{new Vector2( 0.1875f, 0.9375f ), new Vector2( 0.25f, 0.9375f),
+								new Vector2( 0.1875f, 1.0f ),new Vector2( 0.25f, 1.0f )},
+		/*DIRT*/			{new Vector2( 0.125f, 0.9375f ), new Vector2( 0.1875f, 0.9375f),
+								new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
+		/*STONE*/			{new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
+								new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
+		/*BEDROCK*/			{new Vector2( 0.3125f, 0.8125f ), new Vector2( 0.375f, 0.8125f),
+								new Vector2( 0.3125f, 0.875f ),new Vector2( 0.375f, 0.875f )},
+		/*REDSTONE*/		{new Vector2( 0.1875f, 0.75f ), new Vector2( 0.25f, 0.75f),
+								new Vector2( 0.1875f, 0.8125f ),new Vector2( 0.25f, 0.8125f )},
+		/*DIAMOND*/			{new Vector2( 0.125f, 0.75f ), new Vector2( 0.1875f, 0.75f),
+								new Vector2( 0.125f, 0.8125f ),new Vector2( 0.1875f, 0.8125f )}
     };
 
     public Block(BlockType b, Vector3 pos, GameObject p, Chunk o)
@@ -164,19 +168,15 @@ public class Block
 
         MeshFilter meshFilter = (MeshFilter)quad.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
-        //MeshRenderer renderer = quad.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        //renderer.material = material;
     }
 
     int ConvertBlockIndexToLocal(int i)
     {
-        if (i == -1)
-        {
-            i = World.chunkSize - 1;
-        }
-        else if (i == World.chunkSize)
-            i = 0;
-        return i;
+		if(i == -1) 
+			i = World.chunkSize-1; 
+		else if(i == World.chunkSize) 
+			i = 0;
+		return i;
     }
 
     public bool HasSolidNeighbour(int x, int y, int z)
@@ -215,7 +215,7 @@ public class Block
         {
             return chunks[x, y, z].isSolid;
         }
-        catch (System.IndexOutOfRangeException ex) { }
+        catch (System.IndexOutOfRangeException) { }
 
         return false;
     }

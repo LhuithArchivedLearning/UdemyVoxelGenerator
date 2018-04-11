@@ -59,6 +59,7 @@ public class Chunk
         CombineQuads();
         MeshCollider collider = chunk.gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
         collider.sharedMesh = chunk.transform.GetComponent<MeshFilter>().mesh;
+        status = ChunkStatus.DONE;
     }
 
     void CombineQuads()
@@ -92,7 +93,8 @@ public class Chunk
             GameObject.Destroy(quad.gameObject);
         }
     }
-
+    public Chunk(){}
+    
     public Chunk(Vector3 position, Material c)
     {
         chunk = new GameObject(World.BuildChunkName(position));

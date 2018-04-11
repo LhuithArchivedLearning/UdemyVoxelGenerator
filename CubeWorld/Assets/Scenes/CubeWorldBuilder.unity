@@ -137,11 +137,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 198970719}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39d663c0fc95aac4f9505ac88fb683cb, type: 3}
+  m_Script: {fileID: 11500000, guid: acbbdd84ee4596e47baba97c44d9bc53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  block: {fileID: 1109468822195176, guid: 530ef454d45f90748a8f92d8d79e777e, type: 2}
-  worldSize: 8
+  player: {fileID: 0}
+  textureAtlas: {fileID: 2100000, guid: 32e9c2d170bb45e49b1fae3f948894b9, type: 2}
+  WorldSize: 0
+  lastbuildPos: {x: 0, y: 0, z: 0}
 --- !u!4 &198970721
 Transform:
   m_ObjectHideFlags: 0
