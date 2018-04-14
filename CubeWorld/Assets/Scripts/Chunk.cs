@@ -57,6 +57,14 @@ public class Chunk
 		return false;
 	}
 
+    public void Redraw()
+    {
+        GameObject.DestroyImmediate(chunk.GetComponent<MeshFilter>());
+        GameObject.DestroyImmediate(chunk.GetComponent<MeshRenderer>());
+        GameObject.DestroyImmediate(chunk.GetComponent<Collider>());
+        DrawChunk();
+    }
+
 	public void Save() //write data to file
 	{
 		string chunkFile = BuildChunkFileName(chunk.transform.position);
@@ -105,7 +113,7 @@ public class Chunk
                         chunkData[x, y, z] = new Block(Block.BlockType.AIR, pos, chunk.gameObject, this);
                     else if (worldY <= Utils.Utils.GenerateStoneHeight(worldX, worldZ))
                     {
-                        if (Utils.Utils.FBM3D(worldX, worldY, worldZ, 0.01f, 2) < 0.4f && worldY < 40)
+                        if (Utils.Utils.FBM3D(worldX, worldY, worldZ, 0.001f, 3) < 0.4f && worldY < 40)
                             chunkData[x, y, z] = new Block(Block.BlockType.DIAMOND, pos, chunk.gameObject, this);
                         else
                             chunkData[x, y, z] = new Block(Block.BlockType.STONE, pos, chunk.gameObject, this);

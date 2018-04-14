@@ -6,7 +6,7 @@ public class Block
 {
 
     enum Cubeside { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
-    public enum BlockType { GRASS, DIRT, STONE, BEDROCK, REDSTONE, DIAMOND, AIR };
+    public enum BlockType { GRASS, DIRT, STONE, BEDROCK, REDSTONE, DIAMOND, NOCRACK, CRACK1, CRACK2, CRACK3, CRACK4, AIR };
     public bool isSolid;
     public BlockType bType;
     Chunk owner;
@@ -20,7 +20,12 @@ public class Block
         {BlockType.STONE, new Vector2(15, 1)},
     };
 
+    public BlockType health;
+    int currentHealth;
+    int[] blockHealthMAX = {3, 3, 4, -1, 4, 4, 0, 0, 0, 0, 0, 0};
     Vector2[,] blockUVs = {
+
+
 		/*GRASS TOP*/		{new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
 								new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
 		/*GRASS SIDE*/		{new Vector2( 0.1875f, 0.9375f ), new Vector2( 0.25f, 0.9375f),
@@ -34,7 +39,22 @@ public class Block
 		/*REDSTONE*/		{new Vector2( 0.1875f, 0.75f ), new Vector2( 0.25f, 0.75f),
 								new Vector2( 0.1875f, 0.8125f ),new Vector2( 0.25f, 0.8125f )},
 		/*DIAMOND*/			{new Vector2( 0.125f, 0.75f ), new Vector2( 0.1875f, 0.75f),
-								new Vector2( 0.125f, 0.8125f ),new Vector2( 0.1875f, 0.8125f )}
+								new Vector2( 0.125f, 0.8125f ),new Vector2( 0.1875f, 0.8125f )},
+
+        /*NOCRACK*/			{new Vector2( 0.6875f, 0.0f ), new Vector2( 0.75f, 0.0f),
+								new Vector2( 0.6875f, 0.0625f ),new Vector2( 0.75f, 0.0625f )},
+
+        /*CRACK1*/			{new Vector2( 0.0f, 0.0f ), new Vector2( 0.0625f, 0.0f),
+								new Vector2( 0.0f, 0.0625f ),new Vector2( 0.0625f, 0.0625f )},
+
+        /*CRACK2*/			{new Vector2( 0.0625f, 0.0f ), new Vector2( 0.125f, 0.0f),
+								new Vector2( 0.0625f, 0.0625f ),new Vector2( 0.125f, 0.0625f )},
+        
+        /*CRACK3*/			{new Vector2( 0.125f, 0.0f ), new Vector2( 0.1875f, 0.0f),
+								new Vector2( 0.125f, 0.0625f ),new Vector2( 0.1875f, 0.0625f )},
+
+        /*CRACK4*/			{new Vector2( 0.1875f, 0.0f ), new Vector2( 0.25f, 0.0f),
+								new Vector2( 0.1875f, 0.0625f ),new Vector2( 0.25f, 0.0625f )},
     };
 
     public Block(BlockType b, Vector3 pos, GameObject p, Chunk o)
@@ -50,6 +70,9 @@ public class Block
         }
         else { isSolid = true; }
 
+        health = BlockType.NOCRACK;
+        currentHealth = blockHealthMAX[(int)bType];
+
     }
 
     public void SetType(BlockType b){
@@ -59,6 +82,26 @@ public class Block
             isSolid = false;
         else
             isSolid = true;
+
+        health = BlockType.NOCRACK;
+        currentHealth = blockHealthMAX[(int)bType];
+    }
+
+    public bool HitBlock(){
+        if(currentHealth == -1) return false;
+        currentHealth --;
+        health++;
+        if(currentHealth <= 0)
+        {
+            bType = BlockType.AIR;
+            isSolid = false;
+            health = BlockType.NOCRACK;
+            owner.Redraw();
+            return true;
+        }
+
+        owner.Redraw();
+        return false;
     }
 
     void CreateQuad(Cubeside side)
@@ -69,6 +112,7 @@ public class Block
         Vector3[] vertices = new Vector3[4];
         Vector3[] normals = new Vector3[4];
         Vector2[] uvs = new Vector2[4];
+        List<Vector2> suvs = new List<Vector2>();
         int[] triangles = new int[6];
 
         //all possible UVS
@@ -79,7 +123,6 @@ public class Block
 
         if (bType == BlockType.GRASS && side == Cubeside.TOP)
         {
-
             uv00 = blockUVs[0, 0];
             uv10 = blockUVs[0, 1];
             uv01 = blockUVs[0, 2];
@@ -100,6 +143,11 @@ public class Block
             uv11 = blockUVs[(int)(bType + 1), 3];
         }
         //all possible vertices
+
+        suvs.Add(blockUVs[(int)(health + 1), 3]);
+        suvs.Add(blockUVs[(int)(health + 1), 2]);
+        suvs.Add(blockUVs[(int)(health + 1), 0]);
+        suvs.Add(blockUVs[(int)(health + 1), 1]);
 
         Vector3 p0 = new Vector3(-0.5f, -0.5f, 0.5f);
         Vector3 p1 = new Vector3(0.5f, -0.5f, 0.5f);
@@ -167,6 +215,7 @@ public class Block
         mesh.vertices = vertices;
         mesh.normals = normals;
         mesh.uv = uvs;
+        mesh.SetUVs(1, suvs);
         mesh.triangles = triangles;
 
         mesh.RecalculateBounds();
