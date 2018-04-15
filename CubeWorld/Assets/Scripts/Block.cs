@@ -6,12 +6,12 @@ public class Block
 {
 
     enum Cubeside { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
-    public enum BlockType { GRASS, DIRT, STONE, BEDROCK, REDSTONE, DIAMOND, NOCRACK, CRACK1, CRACK2, CRACK3, CRACK4, AIR };
+    public enum BlockType { GRASS, DIRT, WATER, STONE, LEAVES, WOOD, WOODBASE, SAND, GOLD, BEDROCK, REDSTONE, DIAMOND, NOCRACK, CRACK1, CRACK2, CRACK3, CRACK4, AIR };
     public bool isSolid;
     public BlockType bType;
-    Chunk owner;
+    public Chunk owner;
     GameObject parent;
-    Vector3 position;
+    public Vector3 position;
 
     //Block Type and its corrosponding index on the texture Atlas
     public Dictionary<BlockType, Vector2> BlockDictionary = new Dictionary<BlockType, Vector2>(){
@@ -21,82 +21,121 @@ public class Block
     };
 
     public BlockType health;
-    int currentHealth;
-    int[] blockHealthMAX = {3, 3, 4, -1, 4, 4, 0, 0, 0, 0, 0, 0};
+    public int currentHealth;
+    int[] blockHealthMAX = { 3, 3, 8, 4, 2, 4, 4, 2, 3, -1, 4, 4, 0, 0, 0, 0, 0, 0, 0 };
     Vector2[,] blockUVs = {
 
 
 		/*GRASS TOP*/		{new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
-								new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
+                                new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
 		/*GRASS SIDE*/		{new Vector2( 0.1875f, 0.9375f ), new Vector2( 0.25f, 0.9375f),
-								new Vector2( 0.1875f, 1.0f ),new Vector2( 0.25f, 1.0f )},
+                                new Vector2( 0.1875f, 1.0f ),new Vector2( 0.25f, 1.0f )},
 		/*DIRT*/			{new Vector2( 0.125f, 0.9375f ), new Vector2( 0.1875f, 0.9375f),
-								new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
+                                new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
+        /*WATER*/			{new Vector2( 0.9375f, 0.1875f ), new Vector2( 1.0f, 0.1875f),
+                                new Vector2( 0.9375f, 0.25f ),new Vector2( 1.0f, 0.25f )},                               
 		/*STONE*/			{new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
-								new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
+                                new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
+
+        /*LEAVES*/			{new Vector2( 0.0625f, 0.375f ), new Vector2( 0.125f, 0.375f),
+                                new Vector2( 0.0625f, 0.4375f ),new Vector2( 0.125f, 0.4375f )},
+        /*WOOD*/			{new Vector2( 0.375f, 0.625f ), new Vector2( 0.4375f, 0.625f),
+                                new Vector2( 0.375f, 0.6875f ),new Vector2( 0.4375f, 0.6875f )},
+        /*WOODBASE*/		{new Vector2( 0.375f, 0.625f ), new Vector2( 0.4375f, 0.625f),
+                                new Vector2( 0.375f, 0.6875f ),new Vector2( 0.4375f, 0.6875f )},
+
+        /*SAND*/			{new Vector2( 0.125f, 0.875f ), new Vector2( 0.1875f, 0.875f),
+                                new Vector2( 0.125f, 0.9375f ),new Vector2( 0.1875f, 0.9375f )},
+        /*GOLD*/			{new Vector2( 0.0f, 0.8125f ), new Vector2( 0.0625f, 0.8125f),
+                                new Vector2( 0.0f, 0.875f ),new Vector2( 0.0625f, 0.875f )},
 		/*BEDROCK*/			{new Vector2( 0.3125f, 0.8125f ), new Vector2( 0.375f, 0.8125f),
-								new Vector2( 0.3125f, 0.875f ),new Vector2( 0.375f, 0.875f )},
+                                new Vector2( 0.3125f, 0.875f ),new Vector2( 0.375f, 0.875f )},
 		/*REDSTONE*/		{new Vector2( 0.1875f, 0.75f ), new Vector2( 0.25f, 0.75f),
-								new Vector2( 0.1875f, 0.8125f ),new Vector2( 0.25f, 0.8125f )},
+                                new Vector2( 0.1875f, 0.8125f ),new Vector2( 0.25f, 0.8125f )},
 		/*DIAMOND*/			{new Vector2( 0.125f, 0.75f ), new Vector2( 0.1875f, 0.75f),
-								new Vector2( 0.125f, 0.8125f ),new Vector2( 0.1875f, 0.8125f )},
-
+                                new Vector2( 0.125f, 0.8125f ),new Vector2( 0.1875f, 0.8125f )},
         /*NOCRACK*/			{new Vector2( 0.6875f, 0.0f ), new Vector2( 0.75f, 0.0f),
-								new Vector2( 0.6875f, 0.0625f ),new Vector2( 0.75f, 0.0625f )},
-
+                                new Vector2( 0.6875f, 0.0625f ),new Vector2( 0.75f, 0.0625f )},
         /*CRACK1*/			{new Vector2( 0.0f, 0.0f ), new Vector2( 0.0625f, 0.0f),
-								new Vector2( 0.0f, 0.0625f ),new Vector2( 0.0625f, 0.0625f )},
-
+                                new Vector2( 0.0f, 0.0625f ),new Vector2( 0.0625f, 0.0625f )},
         /*CRACK2*/			{new Vector2( 0.0625f, 0.0f ), new Vector2( 0.125f, 0.0f),
-								new Vector2( 0.0625f, 0.0625f ),new Vector2( 0.125f, 0.0625f )},
-        
+                                new Vector2( 0.0625f, 0.0625f ),new Vector2( 0.125f, 0.0625f )},  
         /*CRACK3*/			{new Vector2( 0.125f, 0.0f ), new Vector2( 0.1875f, 0.0f),
-								new Vector2( 0.125f, 0.0625f ),new Vector2( 0.1875f, 0.0625f )},
-
+                                new Vector2( 0.125f, 0.0625f ),new Vector2( 0.1875f, 0.0625f )},
         /*CRACK4*/			{new Vector2( 0.1875f, 0.0f ), new Vector2( 0.25f, 0.0f),
-								new Vector2( 0.1875f, 0.0625f ),new Vector2( 0.25f, 0.0625f )},
+                                new Vector2( 0.1875f, 0.0625f ),new Vector2( 0.25f, 0.0625f )},
     };
 
     public Block(BlockType b, Vector3 pos, GameObject p, Chunk o)
     {
         bType = b;
         parent = p;
-        position = pos;
         owner = o;
-
-        if (bType == BlockType.AIR)
-        {
-            isSolid = false;
-        }
-        else { isSolid = true; }
-
-        health = BlockType.NOCRACK;
-        currentHealth = blockHealthMAX[(int)bType];
-
+        position = pos;
+        SetType(bType);
     }
 
-    public void SetType(BlockType b){
+    public void SetType(BlockType b)
+    {
         bType = b;
 
-        if(bType == BlockType.AIR)
+        if (bType == BlockType.AIR || bType == BlockType.WATER)
             isSolid = false;
         else
             isSolid = true;
 
+        if (bType == Block.BlockType.WATER)
+        {
+            parent = owner.fluid.gameObject;
+        }
+        else
+            parent = owner.chunk.gameObject;
+
         health = BlockType.NOCRACK;
         currentHealth = blockHealthMAX[(int)bType];
     }
 
-    public bool HitBlock(){
-        if(currentHealth == -1) return false;
-        currentHealth --;
+    public void Reset()
+    {
+        health = BlockType.NOCRACK;
+        currentHealth = blockHealthMAX[(int)bType];
+        owner.Redraw();
+    }
+
+    public bool BuildBlock(BlockType b)
+    {
+        if (b == BlockType.WATER)
+        {
+            owner.mb.StartCoroutine(owner.mb.Flow(this, BlockType.WATER, blockHealthMAX[(int)BlockType.WATER], 10));
+        } else if(b == BlockType.SAND){
+            owner.mb.StartCoroutine(owner.mb.Drop(this, BlockType.SAND, 20));
+        }
+        else
+        {
+            SetType(b);
+            owner.Redraw();
+        }
+
+        return true;
+    }
+    public bool HitBlock()
+    {
+        if (currentHealth == -1) return false;
+        currentHealth--;
         health++;
-        if(currentHealth <= 0)
+
+        if (currentHealth == (blockHealthMAX[(int)bType] - 1))
+        {
+            owner.mb.StartCoroutine(owner.mb.HealBlock(position));
+        }
+
+        if (currentHealth <= 0)
         {
             bType = BlockType.AIR;
             isSolid = false;
             health = BlockType.NOCRACK;
             owner.Redraw();
+            owner.UpdateChunk();
             return true;
         }
 
@@ -166,7 +205,6 @@ public class Block
         //	uvsref[i].y += 15f/16f;
         //}
 
-
         int[] trianglesref = new int[] { 3, 1, 0, 3, 2, 1 };
 
         switch (side)
@@ -230,26 +268,55 @@ public class Block
 
     int ConvertBlockIndexToLocal(int i)
     {
-		if(i == -1) 
-			i = World.chunkSize-1; 
-		else if(i == World.chunkSize) 
-			i = 0;
-		return i;
+        if (i <= -1)
+            i = World.chunkSize + 1;
+        else if (i >= World.chunkSize)
+            i = i-World.chunkSize;
+        return i;
+    }
+
+    public BlockType GetBlockType(int x, int y, int z)
+    {
+        Block b = GetBlock(x, y, z);
+        if (b == null)
+            return BlockType.AIR;
+        else
+            return b.bType;
     }
 
     public bool HasSolidNeighbour(int x, int y, int z)
     {
+        try
+        {
+            Block b = GetBlock(x, y, z);
+            if (b != null)
+                return (b.isSolid || b.bType == bType);
+        }
+        catch (System.IndexOutOfRangeException) { }
 
+        return false;
+    }
+
+    public Block GetBlock(int x, int y, int z)
+    {
         Block[,,] chunks = owner.chunkData;
 
         if (x < 0 || x >= World.chunkSize ||
-           y < 0 || y >= World.chunkSize ||
-           z < 0 || z >= World.chunkSize)
+            y < 0 || y >= World.chunkSize ||
+            z < 0 || z >= World.chunkSize)
         {
-            Vector3 neighbourChunkPos = this.parent.transform.position +
-                                            new Vector3((x - (int)position.x) * World.chunkSize,
-                                                        (y - (int)position.y) * World.chunkSize,
-                                                     (z - (int)position.z) * World.chunkSize);
+            int newX = x, newY = y, newZ = z;
+
+            if(x < 0 || x >= World.chunkSize)
+                newX = (x - (int)position.x) * World.chunkSize;
+
+            if(y < 0 || y >= World.chunkSize)
+                newY = (y - (int)position.y) * World.chunkSize;
+
+            if(z < 0 || z >= World.chunkSize)
+                newZ = (z - (int)position.z) * World.chunkSize;
+
+            Vector3 neighbourChunkPos = this.parent.transform.position + new Vector3(newX, newY, newZ);
 
             string nName = World.BuildChunkName(neighbourChunkPos);
 
@@ -263,19 +330,12 @@ public class Block
                 chunks = nChunk.chunkData;
             }
             else
-                return false;
-        }
+                return null;
+        } //block in this chunk
         else
             chunks = owner.chunkData;
 
-
-        try
-        {
-            return chunks[x, y, z].isSolid;
-        }
-        catch (System.IndexOutOfRangeException) { }
-
-        return false;
+        return chunks[x, y, z];
     }
     public void Draw()
     {

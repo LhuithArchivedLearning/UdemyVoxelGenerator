@@ -321,7 +321,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -533,6 +533,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 973298524}
+  currentBlockType: 0
 --- !u!1 &1598971606
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,7 +563,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1556935385}
   textureAtlas: {fileID: 2100000, guid: 32e9c2d170bb45e49b1fae3f948894b9, type: 2}
-  toRemove: []
+  fluid_textureAtlas: {fileID: 2100000, guid: 85c89629c1c7cd54d965a06c6d0ed1c0, type: 2}
   lastbuildPos: {x: 0, y: 0, z: 0}
 --- !u!4 &1598971608
 Transform:

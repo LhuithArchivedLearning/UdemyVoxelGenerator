@@ -10,14 +10,15 @@ public class World : MonoBehaviour
 
     public GameObject player;
     public Material textureAtlas;
+    public Material fluid_textureAtlas;
     public static int columnHeight = 16;
     public static int chunkSize = 16;
     public static int worldSize = 1;
     public static int radius = 4;
     public static ConcurrentDictionary<string, Chunk> chunks;
     public static bool firstbuild = true;
-    public List<string> toRemove = new List<string>();
-    CoroutineQueue queue;
+    List<string> toRemove = new List<string>();
+    public static CoroutineQueue queue;
     public static uint maxCoroutines = 1000;
 
     public Vector3 lastbuildPos;
@@ -45,11 +46,46 @@ public class World : MonoBehaviour
 
         if (!chunks.TryGetValue(n, out c))
         {
-            c = new Chunk(chunkPosition, textureAtlas);
+            c = new Chunk(chunkPosition, textureAtlas, fluid_textureAtlas);
             c.chunk.transform.parent = this.transform;
+            c.fluid.transform.parent = this.transform;
             chunks.TryAdd(c.chunk.name, c);
         }
 
+    }
+
+    public static Block GetWorldBlock(Vector3 pos){
+
+        int cx, cy, cz;
+
+        if(pos.x < 0)
+            cx = (int) ((Mathf.Round(pos.x - chunkSize)+1)/(float)chunkSize) * chunkSize;
+        else
+            cx = (int) ((Mathf.Round(pos.x)/(float)chunkSize)) * chunkSize;
+        
+        if(pos.y < 0)
+            cy = (int) ((Mathf.Round(pos.y - chunkSize)+1)/(float)chunkSize) * chunkSize;
+        else
+            cy = (int) ((Mathf.Round(pos.y)/(float)chunkSize)) * chunkSize;
+
+        if(pos.z < 0)
+            cz = (int) ((Mathf.Round(pos.z - chunkSize)+1)/(float)chunkSize) * chunkSize;
+        else
+            cz = (int) ((Mathf.Round(pos.z)/(float)chunkSize)) * chunkSize;
+
+        int blx = (int) Mathf.Abs((float)System.Math.Round(pos.x) - cx);
+        int bly = (int) Mathf.Abs((float)System.Math.Round(pos.y) - cy);
+        int blz = (int) Mathf.Abs((float)System.Math.Round(pos.z) - cz);
+
+        string cn = BuildChunkName(new Vector3(cx,cy,cz));
+        Chunk c;
+
+        if(chunks.TryGetValue(cn, out c))
+        {
+            return c.chunkData[blx,bly,blz];
+        }
+        else
+            return null;   
     }
 
     IEnumerator BuildRecursiveWorld(int x, int y, int z, int rad)
@@ -117,6 +153,7 @@ public class World : MonoBehaviour
             if (chunks.TryGetValue(n, out c))
             {
                 Destroy(c.chunk);
+                Destroy(c.fluid);
                 c.Save();
                 chunks.TryRemove(n, out c);
                 yield return null;
